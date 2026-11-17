@@ -58,4 +58,12 @@ class BonusTest {
     void t7_five_in_a_row_below_threshold() {
         assertEquals(3, DataFlowTargets.bonus(new int[] {1, 1, 1, 1, 1}, 6));
     }
+
+    // ---- Part C: test that kills mutant M2 (best = present) ----
+
+    @Test
+    @DisplayName("T8 bonus({1,0,1,0,1,0,1,0,1,1},10)=0 : kills M2, last best update has present=6 but streak=2")
+    void t8_broken_streaks_kill_m2() {
+        assertEquals(0, DataFlowTargets.bonus(new int[] {1, 0, 1, 0, 1, 0, 1, 0, 1, 1}, 10));
+    }
 }
