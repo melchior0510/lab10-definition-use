@@ -1,12 +1,13 @@
 package mn.edu.must.sqat;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
- * Stage 1: minimum test set for ALL-DEFS on DataFlowTargets.bonus.
+ * Tests for DataFlowTargets.bonus: T1-T2 satisfy ALL-DEFS, T3-T7 extend to ALL-DU-PAIRS.
  * Line numbers refer to DataFlowTargets.java.
  *
  * Two tests are needed: the defs of score at line 49 and line 51 can never
@@ -24,5 +25,37 @@ class BonusTest {
     @DisplayName("T2 bonus({1,1,1,1,1},5)=8 : present>=threshold (50 true), best>=5 (53 true), score def 51 -> use 54, def 54 -> use 56")
     void t2_five_in_a_row_exact_threshold() {
         assertEquals(8, DataFlowTargets.bonus(new int[] {1, 1, 1, 1, 1}, 5));
+    }
+
+    // ---- Stage 2: extra tests to reach ALL-DU-PAIRS (IDs D1..D35 match README) ----
+
+    @Test
+    @DisplayName("T3 bonus(null,3) throws : attendance def 31 -> p-use 32 true (D1)")
+    void t3_null_attendance_throws() {
+        assertThrows(IllegalArgumentException.class, () -> DataFlowTargets.bonus(null, 3));
+    }
+
+    @Test
+    @DisplayName("T4 bonus({1},-1) throws : threshold def 31 -> p-use 32 true (D5)")
+    void t4_negative_threshold_throws() {
+        assertThrows(IllegalArgumentException.class, () -> DataFlowTargets.bonus(new int[] {1}, -1));
+    }
+
+    @Test
+    @DisplayName("T5 bonus({},0)=5 : present 35 -> p50 true (D12), best 37 -> p53 false (D26), score 51 -> 56 (D34)")
+    void t5_empty_threshold_zero() {
+        assertEquals(5, DataFlowTargets.bonus(new int[] {}, 0));
+    }
+
+    @Test
+    @DisplayName("T6 bonus({},1)=0 : present 35 -> p50 false (D13)")
+    void t6_empty_threshold_one() {
+        assertEquals(0, DataFlowTargets.bonus(new int[] {}, 1));
+    }
+
+    @Test
+    @DisplayName("T7 bonus({1,1,1,1,1},6)=3 : score 49 -> 54 (D31)")
+    void t7_five_in_a_row_below_threshold() {
+        assertEquals(3, DataFlowTargets.bonus(new int[] {1, 1, 1, 1, 1}, 6));
     }
 }
